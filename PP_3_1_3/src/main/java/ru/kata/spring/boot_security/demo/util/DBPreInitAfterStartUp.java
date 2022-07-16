@@ -10,8 +10,6 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.MyUserDetailsService;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 
-import java.sql.SQLException;
-
 @Component
 public class DBPreInitAfterStartUp {
 

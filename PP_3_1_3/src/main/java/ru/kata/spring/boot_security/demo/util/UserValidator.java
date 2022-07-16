@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -26,8 +25,6 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         User targetUser = (User) target;
-        System.out.println("------------>In validate(Object target, Errors errors): User: "
-                + targetUser.toString());
         if (userDetailsService.isUserExistByEmail(targetUser.getEmail(), targetUser.getId())) {
             errors.rejectValue("email", "01", "This email is taken");
         }
