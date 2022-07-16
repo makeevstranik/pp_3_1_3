@@ -1,15 +1,19 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +23,9 @@ import java.util.Optional;
 public class MyUserDetailsService implements UserDetailsService {
     private  UserRepository userRepository;
     private  PasswordEncoder passwordEncoder;
+
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -29,11 +36,17 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()) System.out.println("User: " + user.get().toString());
-        return userRepository.findUserByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("user not found"));
+        if (user.isPresent()) {
+            entityManager.persist(user.get());
+            Hibernate.initialize(user.get().getRoles());
+            entityManager.detach(user.get());
+            return user.get();
+        } else {
+            throw new UsernameNotFoundException("user not found");
+        }
     }
 
     public Boolean isUserExistByEmail(String email, Long id) {

@@ -62,7 +62,7 @@ public class User implements UserDetails {
     @NotNull(message = "enter password", groups = AdvanceInfo.class)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "person_role",
