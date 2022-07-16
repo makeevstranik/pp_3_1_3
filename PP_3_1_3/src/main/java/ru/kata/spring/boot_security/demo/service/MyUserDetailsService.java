@@ -24,8 +24,6 @@ public class MyUserDetailsService implements UserDetailsService {
     private  UserRepository userRepository;
     private  PasswordEncoder passwordEncoder;
 
-    @PersistenceContext
-    private EntityManager entityManager;
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -40,9 +38,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isPresent()) {
-            entityManager.persist(user.get());
             Hibernate.initialize(user.get().getRoles());
-            entityManager.detach(user.get());
             return user.get();
         } else {
             throw new UsernameNotFoundException("user not found");
