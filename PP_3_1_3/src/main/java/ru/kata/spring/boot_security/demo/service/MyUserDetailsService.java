@@ -35,7 +35,6 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isPresent()) {
-            System.out.println("-------> here");
             Hibernate.initialize(user.get().getRoles()); // get lazy roles
             return user.get();
         } else {
